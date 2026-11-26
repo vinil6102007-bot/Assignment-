@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spice Route Kitchen - Online Food Ordering</title>
+
+  <style>
+    /* ===== THEME: FOOD ORDERING (emerald + saffron) ===== */
+    :root {
+      --green: #12372a;
+      --green-mid: #1f5a43;
+      --saffron: #f5a623;
+      --chili: #d83a2e;
+      --cream: #fff8e8;
+      --paper: #ffffff;
+      --text: #24312b;
+      --line: #eadfc3;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { font-family: "Segoe UI", Tahoma, Arial, sans-serif; background: var(--cream); color: var(--text); line-height: 1.55; }
+
+    /* ---------- Offer strip ---------- */
+    .offer { background: var(--saffron); color: var(--green); text-align: center; font-weight: 700; padding: 8px; font-size: 0.95rem; }
+
+    /* ---------- Nav ---------- */
+    .nav {
+      background: var(--green); color: #fff; padding: 14px 6%;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .logo { font-family: Georgia, serif; font-size: 1.6rem; color: var(--saffron); }
+    .logo span { color: #fff; }
+    .nav a { color: #fff; text-decoration: none; margin-left: 20px; }
+    .nav a:hover { color: var(--saffron); }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      background: linear-gradient(115deg, var(--green) 55%, var(--green-mid));
+      color: #fff; padding: 64px 6%; display: flex; gap: 40px; align-items: center; flex-wrap: wrap;
+    }
+    .hero .text { flex: 1 1 340px; }
+    .hero h1 { font-family: Georgia, serif; font-size: 2.9rem; line-height: 1.15; }
+    .hero h1 em { color: var(--saffron); font-style: normal; }
+    .hero p { margin: 14px 0 24px; max-width: 460px; color: #cfe6da; }
+    .btn {
+      display: inline-block; background: var(--saffron); color: var(--green); font-weight: 700;
+      padding: 12px 28px; border-radius: 30px; text-decoration: none; border: none; font-size: 1rem; cursor: pointer;
+    }
+    .btn:hover { background: #ffc255; }
+
+    /* plate made with CSS */
+    .plate-wrap { flex: 1 1 240px; display: flex; justify-content: center; }
+    .plate {
+      width: 240px; height: 240px; border-radius: 50%; background: #fff;
+      border: 12px solid #e8efe9; box-shadow: 0 0 0 6px var(--saffron), 0 20px 40px rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .plate div { width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffd37a, var(--saffron) 55%, #c9780a); }
+
+    section { padding: 46px 6%; }
+    h2 { font-family: Georgia, serif; font-size: 1.9rem; color: var(--green); margin-bottom: 6px; }
+    .sub { color: #6d7a72; margin-bottom: 22px; }
+
+    /* ---------- Menu filter (radio buttons, CSS only) ---------- */
+    .filter > input { position: absolute; opacity: 0; pointer-events: none; }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+    .tabs label {
+      padding: 9px 22px; border: 2px solid var(--green); border-radius: 30px;
+      cursor: pointer; font-weight: 600; color: var(--green); background: var(--paper);
+    }
+    .tabs label:hover { background: #e9f2ec; }
+    #c-all:checked ~ .tabs label[for=c-all],
+    #c-start:checked ~ .tabs label[for=c-start],
+    #c-main:checked ~ .tabs label[for=c-main],
+    #c-sweet:checked ~ .tabs label[for=c-sweet] { background: var(--green); color: #fff; }
+
+    #c-start:checked ~ .grid .dish:not(.start) { display: none; }
+    #c-main:checked  ~ .grid .dish:not(.main)  { display: none; }
+    #c-sweet:checked ~ .grid .dish:not(.sweet) { display: none; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; }
+    .dish { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+    .dish:hover { box-shadow: 0 8px 22px rgba(18,55,42,0.15); }
+    .pic { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 2.6rem; color: rgba(255,255,255,0.9); font-family: Georgia, serif; }
+    .g1 { background: linear-gradient(135deg, #d9831f, #f5c04d); }
+    .g2 { background: linear-gradient(135deg, #9c2a1c, #e8683d); }
+    .g3 { background: linear-gradient(135deg, #1f5a43, #7cc29b); }
+    .g4 { background: linear-gradient(135deg, #b0407a, #f0a0c0); }
+    .g5 { background: linear-gradient(135deg, #5a3a1c, #c28b4e); }
+    .body { padding: 16px; }
+    .body h3 { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; }
+    .body p { color: #6d7a72; font-size: 0.9rem; margin: 4px 0 10px; }
+    .row { display: flex; justify-content: space-between; align-items: center; }
+    .price { font-weight: 700; font-size: 1.1rem; color: var(--green); }
+    /* veg / non-veg symbols */
+    .veg, .nonveg { width: 14px; height: 14px; border: 2px solid; border-radius: 3px; position: relative; flex-shrink: 0; }
+    .veg { border-color: #2f9e5b; } .nonveg { border-color: var(--chili); }
+    .veg::after, .nonveg::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; }
+    .veg::after { background: #2f9e5b; } .nonveg::after { background: var(--chili); }
+    .chip { font-size: 0.75rem; background: #fff1d1; color: #8a5a00; padding: 2px 10px; border-radius: 20px; font-weight: 700; }
+
+    /* ---------- Order section ---------- */
+    .order { background: var(--green); color: #fff; }
+    .order h2 { color: var(--saffron); }
+    .order .sub { color: #cfe6da; }
+    .cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; }
+    .box { background: var(--paper); color: var(--text); border-radius: 14px; padding: 24px; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+    th { color: var(--green); }
+    td input[type=number] { width: 60px; padding: 6px; border: 1px solid #b9c6bd; border-radius: 6px; font: inherit; }
+    tfoot td { font-weight: 700; font-size: 1.1rem; border-bottom: none; color: var(--green); }
+
+    label.l { display: block; margin: 12px 0 4px; font-weight: 600; }
+    input[type=text], input[type=tel], input[type=time], select, textarea {
+      width: 100%; padding: 10px; border: 1px solid #b9c6bd; border-radius: 8px; font: inherit; background: #fcfdfb;
+    }
+    input:focus, select:focus, textarea:focus { outline: 3px solid #ffe2a6; border-color: var(--saffron); }
+    .opts label { margin-right: 14px; }
+    form .btn { width: 100%; margin-top: 18px; }
+
+    /* ---------- Steps ---------- */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .step { text-align: center; padding: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; }
+    .num { width: 44px; height: 44px; border-radius: 50%; background: var(--saffron); color: var(--green); font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+
+    footer { background: var(--green); color: #cfe6da; text-align: center; padding: 20px; font-size: 0.9rem; }
+
+    @media (max-width: 800px) { .cols { grid-template-columns: 1fr; } .hero h1 { font-size: 2.1rem; } .nav a { margin: 0 14px 0 0; } }
+  </style>
+</head>
+
+<body>
+  <div class="offer">Free delivery on orders above Rs. 499 | Use code SPICE10 for 10% off</div>
+
+  <div class="nav">
+    <div class="logo">Spice<span>Route</span> Kitchen</div>
+    <div>
+      <a href="#menu">Menu</a>
+      <a href="#how">How it works</a>
+      <a href="#order">Order now</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="text">
+      <h1>Fresh, hot and<br><em>delivered fast</em></h1>
+      <p>Home-style Indian food cooked to order. Pick your favourites and we will deliver in 30 minutes.</p>
+      <a href="#order" class="btn">Order now</a>
+    </div>
+    <div class="plate-wrap"><div class="plate"><div></div></div></div>
+  </header>
+
+  <section id="menu">
+    <h2>Our menu</h2>
+    <p class="sub">Tap a category to filter the dishes.</p>
+
+    <div class="filter">
+      <input type="radio" name="cat" id="c-all" checked>
+      <input type="radio" name="cat" id="c-start">
+      <input type="radio" name="cat" id="c-main">
+      <input type="radio" name="cat" id="c-sweet">
+
+      <div class="tabs">
+        <label for="c-all">All</label>
+        <label for="c-start">Starters</label>
+        <label for="c-main">Main course</label>
+        <label for="c-sweet">Desserts</label>
+      </div>
+
+      <div class="grid">
+        <article class="dish start">
+          <div class="pic g1">Pk</div>
+          <div class="body">
+            <h3><i class="veg"></i> Paneer Tikka</h3>
+            <p>Smoky grilled cottage cheese with mint chutney.</p>
+            <div class="row"><span class="price">Rs. 220</span><span class="chip">Bestseller</span></div>
+          </div>
+        </article>
+        <article class="dish start">
+          <div class="pic g2">Cw</div>
+          <div class="body">
+            <h3><i class="nonveg"></i> Chicken 65</h3>
+            <p>Crispy, spicy South Indian style chicken bites.</p>
+            <div class="row"><span class="price">Rs. 260</span><span class="chip">Spicy</span></div>
+          </div>
+        </article>
+        <article class="dish main">
+          <div class="pic g5">Bi</div>
+          <div class="body">
+            <h3><i class="nonveg"></i> Chicken Biryani</h3>
+            <p>Slow-cooked basmati rice with tender chicken and raita.</p>
+            <div class="row"><span class="price">Rs. 320</span><span class="chip">Chef's pick</span></div>
+          </div>
+        </article>
+        <article class="dish main">
+          <div class="pic g3">Pb</div>
+          <div class="body">
+            <h3><i class="veg"></i> Paneer Butter Masala</h3>
+            <p>Creamy tomato gravy served with two butter naans.</p>
+            <div class="row"><span class="price">Rs. 280</span><span class="chip">Popular</span></div>
+          </div>
+        </article>
+        <article class="dish main">
+          <div class="pic g1">Dt</div>
+          <div class="body">
+            <h3><i class="veg"></i> Dal Tadka Meal</h3>
+            <p>Yellow dal, jeera rice, roti, salad and pickle.</p>
+            <div class="row"><span class="price">Rs. 190</span><span class="chip">Value</span></div>
+          </div>
+        </article>
+        <article class="dish sweet">
+          <div class="pic g4">Gj</div>
+          <div class="body">
+            <h3><i class="veg"></i> Gulab Jamun</h3>
+            <p>Two warm syrup-soaked milk dumplings.</p>
+            <div class="row"><span class="price">Rs. 90</span><span class="chip">Sweet</span></div>
+          </div>
+        </article>
+        <article class="dish sweet">
+          <div class="pic g5">Rm</div>
+          <div class="body">
+            <h3><i class="veg"></i> Rasmalai</h3>
+            <p>Soft cheese patties in chilled saffron milk.</p>
+            <div class="row"><span class="price">Rs. 110</span><span class="chip">Chilled</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <p class="sub">Three easy steps from hunger to happy.</p>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3>Choose</h3><p>Pick dishes from the menu.</p></div>
+      <div class="step"><div class="num">2</div><h3>Order</h3><p>Set quantity and enter your address.</p></div>
+      <div class="step"><div class="num">3</div><h3>Enjoy</h3><p>Hot food arrives at your door.</p></div>
+    </div>
+  </section>
+
+  <section id="order" class="order">
+    <h2>Place your order</h2>
+    <p class="sub">Enter the quantity and your delivery details.</p>
+    <div class="cols">
+
+      <div class="box">
+        <table>
+          <thead><tr><th>Dish</th><th>Price</th><th>Qty</th></tr></thead>
+          <tbody>
+            <tr><td>Paneer Tikka</td><td>Rs. 220</td><td><input type="number" min="0" value="1"></td></tr>
+            <tr><td>Chicken Biryani</td><td>Rs. 320</td><td><input type="number" min="0" value="2"></td></tr>
+            <tr><td>Paneer Butter Masala</td><td>Rs. 280</td><td><input type="number" min="0" value="0"></td></tr>
+            <tr><td>Dal Tadka Meal</td><td>Rs. 190</td><td><input type="number" min="0" value="0"></td></tr>
+            <tr><td>Gulab Jamun</td><td>Rs. 90</td><td><input type="number" min="0" value="1"></td></tr>
+          </tbody>
+          <tfoot><tr><td colspan="2">Sample total</td><td>Rs. 950</td></tr></tfoot>
+        </table>
+      </div>
+
+      <form class="box" action="#" method="post">
+        <label class="l" for="name">Name</label>
+        <input type="text" id="name" placeholder="Full name" required>
+
+        <label class="l" for="phone">Phone</label>
+        <input type="tel" id="phone" placeholder="10-digit number" pattern="[0-9]{10}" required>
+
+        <label class="l" for="addr">Delivery address</label>
+        <textarea id="addr" rows="3" placeholder="House no, street, area" required></textarea>
+
+        <label class="l" for="slot">Delivery time</label>
+        <select id="slot"><option>As soon as possible</option><option>Lunch (12 - 2 PM)</option><option>Dinner (7 - 9 PM)</option></select>
+
+        <label class="l">Payment</label>
+        <div class="opts">
+          <label><input type="radio" name="pay" checked> UPI</label>
+          <label><input type="radio" name="pay"> Card</label>
+          <label><input type="radio" name="pay"> Cash</label>
+        </div>
+
+        <label class="l" for="note">Cooking note</label>
+        <input type="text" id="note" placeholder="Less spicy, no onion, etc.">
+
+        <button type="submit" class="btn">Place order</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>&copy; 2026 Spice Route Kitchen | Food Ordering Assignment</footer>
+</body>
+</html>
